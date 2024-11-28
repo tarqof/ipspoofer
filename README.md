@@ -2,11 +2,11 @@
 
 IP Spoofer Tool was created with **Cybersecurity** and **Anonymity** in mind.
 
-  - Made for **Kali Linux**.
+   - Made for **Kali Linux**.
 
-  - You can choose the network interface you want.
+   - You can choose the network interface you want.
 
-  - Your IP address changes every ms time you specify.
+   - Your IP address changes every ms time you specify.
 
 
 ---
