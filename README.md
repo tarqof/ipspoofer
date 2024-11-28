@@ -24,7 +24,11 @@
      ```
      This command will take you into the project directory.
 
-4. **Run the Project**:
+4. **Installing Required Modules**:
+     ```bash
+     pip install -r reqs.txt
+     ```
+5. **Run the Project**:
    - Before running the project, make sure **Python** is installed on your system. If Python is not installed, use the following command to install it:
      ```bash
      sudo apt install python3
@@ -34,7 +38,7 @@
      sudo python3 spoof.py
      ```
 
-5. **Using the Program**:
+6. **Using the Program**:
    - When the program starts, it will ask you which network interface you want to change the IP address for. The options shown will be:
      ```
      1. eth0
@@ -43,7 +47,7 @@
      ```
    - After making your selection, the program will **change your IP address every 3 seconds**.
 
-6. **Stopping the Program**:
+7. **Stopping the Program**:
    - To stop the program, press **Ctrl + C**. This will terminate the program and return you to the terminal.
 
 
