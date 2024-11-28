@@ -25,6 +25,7 @@
      This command will take you into the project directory.
 
 4. **Installing Required Modules**:
+   - We will use the **reqs.txt** file to load the required modules.
      ```bash
      pip install -r reqs.txt
      ```
