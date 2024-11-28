@@ -1,43 +1,56 @@
-import subprocess
+from scapy.all import *
+import os
 import time
 import random
 
-def get_current_ip_address(interface_name):
-    """
-    Returns the current IP address of the specified network interface.
-    """
-    ip_address = subprocess.check_output(["ip", "addr", "show", "dev", interface_name]).decode()
-    return ip_address.split("\n")[2].split(" ")[5]
+def display_ascii_art():
+    # Green text color using ANSI escape code
+    green_color = "\033[92m"
+    reset_color = "\033[0m"
+    ascii_art = r"""
+ ___  ________        ________  ________  ________  ________  ________ _______   ________     
+|\  \|\   __  \      |\   ____\|\   __  \|\   __  \|\   __  \|\  _____\\  ___ \ |\   __  \    
+\ \  \ \  \|\  \     \ \  \___|\ \  \|\  \ \  \|\  \ \  \|\  \ \  \__/\ \   __/|\ \  \|\  \   
+ \ \  \ \   ____\     \ \_____  \ \   ____\ \  \\\  \ \  \\\  \ \   __\\ \  \_|/_\ \   _  _\  
+  \ \  \ \  \___|      \|____|\  \ \  \___|\ \  \\\  \ \  \\\  \ \  \_| \ \  \_|\ \ \  \\  \| 
+   \ \__\ \__\           ____\_\  \ \__\    \ \_______\ \_______\ \__\   \ \_______\ \__\\ _\ 
+    \|__|\|__|          |\_________\|__|     \|_______|\|_______|\|__|    \|_______|\|__|\|__|
+                        \|_________|                                                          
+                                                                                              
+                                                                                              
 
-def generate_new_ip_address():
+Maded by Tarqof: https://github.com/tarqof
     """
-    Generates a new IP address.
-    """
-    new_ip_address = "192.168." + str(random.randint(0, 255)) + "." + str(random.randint(0, 255))
-    return new_ip_address
+    print(f"{green_color}{ascii_art}{reset_color}")
 
-def assign_ip_address(interface_name, new_ip_address):
+def spoof_ip(interface, interval_ms):
     """
-    Assigns the new IP address to the specified network interface.
-    """
-    subprocess.run(["ip", "addr", "flush", "dev", interface_name])  # Clears the existing IP configuration
-    subprocess.run(["ip", "addr", "add", new_ip_address + "/24", "dev", interface_name])  # Assigns the new IP address
+    Spoofs the IP address on the specified network interface at defined intervals.
 
-def validate_new_ip_address(interface_name, new_ip_address):
+    Args:
+        interface (str): The network interface (e.g., eth0, wlan0, wlan1).
+        interval_ms (int): The interval in milliseconds to change the IP address.
     """
-    Validates if the new IP address has been successfully assigned.
-    """
-    ip_address = subprocess.check_output(["ip", "addr", "show", "dev", interface_name]).decode()
-    if new_ip_address in ip_address:
-        print("New IP address is:", ip_address.split("\n")[2])  # Prints the new IP address
-    else:
-        print("Failed to assign new IP address.")
+    try:
+        while True:
+            # Generate a random IP address
+            random_ip = f"192.168.{random.randint(1, 254)}.{random.randint(1, 254)}"
+            
+            # Set the new IP address for the interface
+            os.system(f"ifconfig {interface} {random_ip} netmask 255.255.255.0")
+            
+            print(f"New IP Address: {random_ip} (Interface: {interface})")
+            
+            # Wait for the specified interval
+            time.sleep(interval_ms / 1000.0)
+    except KeyboardInterrupt:
+        print("\nIP spoofing process stopped.")
+        os.system(f"ifconfig {interface} down")
+        os.system(f"ifconfig {interface} up")
 
-# Main program
-interface_name = input("Enter the network interface name (e.g. eth0, wlan0): ")
-while True:
-    current_ip_address = get_current_ip_address(interface_name)  # Get current IP address
-    new_ip_address = generate_new_ip_address()  # Generate a new IP address
-    assign_ip_address(interface_name, new_ip_address)  # Assign the new IP address
-    validate_new_ip_address(interface_name, new_ip_address)  # Validate the new IP address
-    time.sleep(3)  # Wait time
+if __name__ == "__main__":
+    display_ascii_art()
+    interface = input("Please enter a network interface (e.g., eth0, wlan0): ")
+    interval_ms = int(input("Enter the interval for changing the IP address (in milliseconds): "))
+    
+    spoof_ip(interface, interval_ms)
