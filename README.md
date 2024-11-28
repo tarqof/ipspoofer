@@ -26,7 +26,7 @@
 
 4. **Installing Required Modules**:
      ```bash
-        pip install -r reqs.txt
+     pip install -r reqs.txt
      ```
 5. **Run the Project**:
    - Before running the project, make sure **Python** is installed on your system. If Python is not installed, use the following command to install it:
