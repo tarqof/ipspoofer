@@ -14,7 +14,7 @@ def display_ascii_art():
  \ \  \ \   ____\     \ \_____  \ \   ____\ \  \\\  \ \  \\\  \ \   __\\ \  \_|/_\ \   _  _\  
   \ \  \ \  \___|      \|____|\  \ \  \___|\ \  \\\  \ \  \\\  \ \  \_| \ \  \_|\ \ \  \\  \| 
    \ \__\ \__\           ____\_\  \ \__\    \ \_______\ \_______\ \__\   \ \_______\ \__\\ _\ 
-    \|__|\|__|          |\_________\|__|     \|_______|\|_______|\|__|    \|_______|\|__|\|__|
+    \|__|\|__|          |\_________\|__|     \|_______|\|_______|\|__|    \|_______|\|__|\|__|  
                         \|_________|                                                          
                                                                                               
                                                                                               
@@ -36,8 +36,17 @@ def spoof_ip(interface, interval_ms):
             # Generate a random IP address
             random_ip = f"192.168.{random.randint(1, 254)}.{random.randint(1, 254)}"
             
-            # Set the new IP address for the interface
-            os.system(f"ifconfig {interface} {random_ip} netmask 255.255.255.0")
+            # Set the new IP address for the interface using 'ip' command instead of 'ifconfig'
+            os.system(f"ip addr flush dev {interface}")
+            os.system(f"ip addr add {random_ip}/24 dev {interface}")
+            
+            # Bring the interface up (in case it was down)
+            os.system(f"ip link set {interface} up")
+            
+            # Set the default gateway and DNS (example: CloudFlare's public DNS)
+            os.system(f"ip route add default via 192.168.1.1 dev {interface}")
+            os.system("echo 'nameserver 1.1.1.1' > /etc/resolv.conf")
+            os.system("echo 'nameserver 1.0.0.1' >> /etc/resolv.conf")
             
             print(f"New IP Address: {random_ip} (Interface: {interface})")
             
@@ -45,8 +54,8 @@ def spoof_ip(interface, interval_ms):
             time.sleep(interval_ms / 1000.0)
     except KeyboardInterrupt:
         print("\nIP spoofing process stopped.")
-        os.system(f"ifconfig {interface} down")
-        os.system(f"ifconfig {interface} up")
+        os.system(f"ip link set {interface} down")
+        os.system(f"ip link set {interface} up")
 
 if __name__ == "__main__":
     display_ascii_art()
