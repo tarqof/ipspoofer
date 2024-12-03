@@ -26,9 +26,8 @@ Maded by Tarqof: https://github.com/tarqof
 def spoof_ip(interface, interval_ms):
     """
     Spoofs the IP address on the specified network interface at defined intervals.
-
     Args:
-        interface (str): The network interface (e.g., eth0, wlan0, wlan1).
+        interface (str): The network interface (e.g., eth0, wlan0).
         interval_ms (int): The interval in milliseconds to change the IP address.
     """
     try:
@@ -36,23 +35,22 @@ def spoof_ip(interface, interval_ms):
             # Generate a random IP address
             random_ip = f"192.168.{random.randint(1, 254)}.{random.randint(1, 254)}"
             
-            # Set the new IP address for the interface
+            # Bring the interface down, change IP, and bring it back up
             os.system(f"ifconfig {interface} down")  # Bring the interface down before changing the IP
-            time.sleep(1)  # Wait for the interface to be fully down
+            time.sleep(0.1)  # Short wait to allow interface to be down
             
-            # Set the new IP address
             os.system(f"ifconfig {interface} {random_ip} netmask 255.255.255.0")
+            os.system(f"ifconfig {interface} up")  # Bring the interface back up
+            time.sleep(0.1)  # Short wait to ensure interface is up
             
-            # Bring the interface back up
-            os.system(f"ifconfig {interface} up")
-            time.sleep(1)  # Wait to ensure the interface is up and running
-
-            # Check the internet connection and reset the default gateway if necessary
-            os.system("route add default gw 192.168.1.1")  # Change this to your network's gateway address if different
+            # Ensure the network is still connected by configuring the gateway
+            os.system("route add default gw 192.168.1.1")  # Update with your gateway IP if different
             print(f"New IP Address: {random_ip} (Interface: {interface})")
             
-            # Wait for the specified interval
-            time.sleep(interval_ms / 1000.0)
+            # Wait for the specified interval (in milliseconds)
+            start_time = time.perf_counter()  # High precision start time
+            while (time.perf_counter() - start_time) < (interval_ms / 1000.0):
+                pass  # Busy-wait loop to achieve more accurate timing (milisecond precision)
     except KeyboardInterrupt:
         print("\nIP spoofing process stopped.")
         os.system(f"ifconfig {interface} down")
